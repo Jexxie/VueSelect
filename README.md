@@ -1,2 +1,0 @@
-# VueSelect
-Created with CodeSandbox

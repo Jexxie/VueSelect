@@ -5,7 +5,7 @@
         <input type="text" readonly placeholder="请选择菜品" :value="selected">
         <span class="iconfont icon-zhankaishangxia"></span>
       </div>
-      <ul class="options" v-show="showOptions">
+      <ul class="options" v-show="showOptions" v-clickOut="test">
         <li
           v-for="(item, index) in options"
           :key="index"
@@ -47,13 +47,30 @@ export default {
       if (value !== this.selected) {
         this.selected = value;
       }
+    },
+    test() {
+      this.showOptions = false;
     }
   },
-  mounted() {
-    let that = this;
-    document.addEventListener("click", function() {
-      that.showOptions = false;
-    });
+  directives: {
+    //这里是自定义指令
+    clickOut: {
+      // 这里是自定义的v-clickOut指令
+      bind: function(el, binding) {
+        // 如果点击的元素是被指令绑定的元素的子元素或是被绑定元素本身，那就什么都不做；如果不是，那就执行传递进来的test函数。
+        function handler(e) {
+          if (el.contains(e.target)) return false;
+          if (binding.expression) {
+            binding.value();
+          }
+        }
+        el.handler = handler;
+        document.addEventListener("click", el.handler);
+      },
+      unbind: function(el) {
+        document.removeEventListener("click", el.handler);
+      }
+    }
   }
 };
 </script>

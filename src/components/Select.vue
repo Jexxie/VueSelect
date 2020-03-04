@@ -1,16 +1,15 @@
 <template>
   <div class="select">
-    <div class="inner">
-      <div class="inputWrapper" @click.stop="showOptions = !showOptions">
+    <!-- 指令放到了这里 -->
+    <div class="inner" v-clickOut="test">
+      <div class="inputWrapper" @click="showOptions = !showOptions">
+        <!-- 去掉修饰符.stop -->
+        <!-- 当有多个Select的时候，只有点击了空白的其它地方的时候，展开的选项才都会消失，当其中一个选项展开再去选择另一个的时候，之前展开的选项不会被收起。产生这个问题的原因是点击input部分的时候被阻止冒泡了。只要把它去掉同时把指定指令绑定的元素扩大到整个select而不是仅是之前的options部分就行了，因为在指令里有了拦截。 -->
         <input type="text" readonly placeholder="请选择菜品" :value="selected">
         <span class="iconfont icon-zhankaishangxia"></span>
       </div>
-      <ul class="options" v-show="showOptions" v-clickOut="test">
-        <li
-          v-for="(item, index) in options"
-          :key="index"
-          @click.stop="choose(item.value)"
-        >{{item.value}}</li>
+      <ul class="options" v-show="showOptions">
+        <li v-for="(item, index) in options" :key="index" @click="choose(item.value)">{{item.value}}</li>
       </ul>
     </div>
   </div>
@@ -37,27 +36,31 @@ export default {
           value: "地三鲜"
         }
       ],
-      showOptions: false,
-      selected: ""
+      selected: "",
+      showOptions: false
     };
   },
   methods: {
-    choose(value) {
+    choose(name) {
       this.showOptions = false;
-      if (value !== this.selected) {
-        this.selected = value;
+      if (name !== this.selected) {
+        this.selected = name;
+        this.$emit("selected", name);
       }
+    },
+    outsideDirec() {
+      this.showOptions = false;
     },
     test() {
       this.showOptions = false;
+    },
+    example2() {
+      return "xxx";
     }
   },
   directives: {
-    //这里是自定义指令
     clickOut: {
-      // 这里是自定义的v-clickOut指令
       bind: function(el, binding) {
-        // 如果点击的元素是被指令绑定的元素的子元素或是被绑定元素本身，那就什么都不做；如果不是，那就执行传递进来的test函数。
         function handler(e) {
           if (el.contains(e.target)) return false;
           if (binding.expression) {
@@ -91,20 +94,19 @@ li {
 .inner {
   position: relative;
   margin: 0 auto;
-  width: 300px;
+  width: 200px;
   height: 30px;
   font-size: $size;
-  border: 1px solid #a607f0;
+  border: 1px solid #dddee1;
   border-radius: 3px;
   .inputWrapper {
     width: 100%;
     height: 100%;
-    background-color: #ddd;
     > input {
       width: 85%;
       height: 100%;
       padding-left: 10px;
-      border: 1px solid #07d5f0;
+      border: none;
       cursor: pointer;
     }
   }
@@ -112,9 +114,9 @@ li {
     position: absolute;
     left: 0;
     right: 0;
-    top: 150%;
+    top: 120%;
     padding: 10px 0;
-    background-color: rgb(228, 117, 26);
+    background-color: #fff;
     box-shadow: 0 0 4px #ddd;
     border-radius: 3px;
     overflow: auto;
@@ -122,7 +124,7 @@ li {
       padding: 3px 10px;
       cursor: pointer;
       &:hover {
-        background-color: rgb(4, 231, 220);
+        background-color: #eee;
       }
     }
   }

@@ -1,17 +1,12 @@
 <template>
   <div id="app">
-    <Select/>
+    <router-view/>
   </div>
 </template>
 
 <script>
-import Select from "./components/Select";
-
 export default {
-  name: "App",
-  components: {
-    Select
-  }
+  name: "App"
 };
 </script>
 
